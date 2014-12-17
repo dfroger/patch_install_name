@@ -12,7 +12,7 @@ set -o nounset
 if [ "$#" -lt 2 ]
 then
     echo "Usage: bash patch_install_name.sh FILENAME NAME0 [NAME1, ...]"
-    echo "       where NAME0 with match file libNAME0.dylib"
+    echo "       where NAME0 will match file libNAME0.dylib"
     exit 1
 fi
 packagepath=$1
