@@ -9,10 +9,9 @@ set -o pipefail
 set -o nounset
 
 # Parse command line.
-if [ "$#" -lt 2 ]
+if [ "$#" -ne 1 ]
 then
-    echo "Usage: bash patch_install_name.sh FILENAME NAME0 [NAME1, ...]"
-    echo "       where NAME0 will match file libNAME0.dylib"
+    echo "Usage: bash patch_install_name.sh pkg.tar.bz2"
     exit 1
 fi
 packagepath=$1
@@ -24,21 +23,16 @@ mkdir -p $WORK_DIR
 cd $WORK_DIR
 
 # Extract archive.
-tar xvjf $packagepath
+tar xjf $packagepath
 content=$(ls)
 
-shift
-for name in $@
+for filepath in $(find . -name '*.dylib')
 do
-    all_version_pattern="lib$name*.dylib"
-    install_name="@rpath/lib$name.dylib"
-    for libpath in $(find . -name $all_version_pattern)
-    do
-        echo "install_name_tool -id $install_name $libpath"
-        install_name_tool -id $install_name $libpath
-    done
+    install_name="@rpath/$(basename $filepath)"
+    echo "install_name_tool -id $install_name $filepath"
+    #install_name_tool -id $install_name $filepath
 done
 
 # Create archive
-tar cvjf $packagename $content
+tar cjf $packagename $content
 echo $WORK_DIR/$packagename
